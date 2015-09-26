@@ -1,0 +1,35 @@
+<div class="dashboard-summary three">
+    <p>
+    Show me <span class="selectable btn" title="metric" _name="metric">metric</span> for people who did <span class="selectable  btn" title="Event A" _name="eventA">Event A</span>
+    </p>
+    <p>
+    Since they made <span class="selectable btn" title="Event B" _name="eventB">Event B</span><span class="fa fa-plus addCondition btn" _name="dimension"></span>
+    </p>
+    <p id="optional-condition"></p>
+    <p>
+    Cohort people within <span class="selectable btn" title="CohortInterval" _name="interval">CohortInterval</span> from Date A to Date B
+    </p>
+    <p>
+    by <span class="selectable btn" title="CohortDimension" _name="dimension">CohortDimension</span>
+        <button id="submit">submit</button>
+    </p>
+</div>
+<div class="widget">
+    <div class="widget-header">
+        <div class="left">
+            {{#if logo-class}}
+            <div class="logo {{logo-class}}"></div>
+            {{else}}
+            <div class="logo font-logo2">
+                <i class="fa {{font-logo-class}}"></i>
+            </div>
+            {{/if}}
+            <div class="title">{{page-title}}</div>
+        </div>
+    </div>
+    <div class="widget-content help-zone-vb" data-help-localize="help.{{{chart-helper}}}" style="{{#if graph-type-double-pie}} overflow:hidden; {{else}} height:300px; padding-top:20px; padding-bottom:10px; {{/if}}">
+        <div id="dashboard-graph" class="graph" style="height:100%; margin-left:-10px;"></div>
+    </div>
+
+</div>
+
