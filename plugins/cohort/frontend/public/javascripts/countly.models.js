@@ -42,14 +42,14 @@
                 if(_metric.indexOf("Revenue") > 0) {
                     return ["In-App Purchase"];
                 }else{
-                    return ["Anything", "In-App Purchase", "GameSession", "Won", "Lost"];
+                    return ["Launch", "In-App Purchase", "Install", "Won", "Lost"];
                 }
             case "eventB":
                 return  ["Installation", "Launch", "In-App Purchase", "GameSession", "Won", "Lost"];
             case "interval":
                 return  ["Day","Week","Month"];
             case "dimension":
-                return  ["AppVersion","Country","Device"];
+                return  ["AppVersion","Device"];
             case "dimensionCondition":
                 var finalList=[];
                 var totalList=["AppVersion","Country","Device"];
@@ -108,13 +108,13 @@
     countlyCohort.getConditionOptionList = function(name) {
 
         if(name === "AppVersion"){
-            return ["v1","v2","v3"];
+            return ["1.0","1.5","2.0","2.2","3.0"];
 
         }else if(name === "Country"){
             return ["China","Singapore","America","Other"];
 
         }else if(name === "Device"){
-            return  ["Android","Ios","Blackberry","Windows"];
+            return  ['Kindle Fire HDX', 'iPad Air', 'iPhone 5C', 'One S', 'Fire Phone', 'Nexus 4', 'Galaxy Note', 'iPhone 6', 'Nexus 7', 'iPad 4', 'iPhone 4S', 'iPhone Mini', 'One Touch Idol X', 'iPhone 5', 'Optimus L5', 'Nexus 10', 'Nexus 5', 'Lumia 920', 'Windows Phone', 'Xperia Z'];
         }
 
     }
@@ -129,6 +129,31 @@
         return _dimensionCondition[name];
     }
     countlyCohort.refreshData=function(callback){
+        var query = buidQuery();
+        $.ajax({
+            type:"GET",
+            url:countlyCommon.API_PARTS.data.r,
+            data:{
+                "api_key":countlyGlobal.member.api_key,
+                "app_id":countlyCommon.ACTIVE_APP_ID,
+                "method":"cohort",
+                "query":JSON.stringify(query)
+            },
+            dataType:"jsonp",
+            success:function (data) {
+                if(data.status=="OK"){
+                    _cohorts = data.result.cohorts;
+                    _elapsedInMS = data.result.elapsedInMS;
+                    callback();
+                }else{
+                    alert("can't get data");
+                }
+            }
+        });
+
+    }
+    function buidQuery(){
+/*
         var query ={
             "dataSource" : "gamecohort",
             "appKey" : "c907ad335af73a664796f00bc4f17948",
@@ -155,27 +180,37 @@
                 "cubeField" : "DayAge"
             } ]
         }
-        $.ajax({
-            type:"GET",
-            url:countlyCommon.API_PARTS.data.r,
-            data:{
-                "api_key":countlyGlobal.member.api_key,
-                "app_id":countlyCommon.ACTIVE_APP_ID,
-                "method":"cohort",
-                "query":JSON.stringify(query)
-            },
-            dataType:"jsonp",
-            success:function (data) {
-                if(data.status=="OK"){
-                    _cohorts = data.result.cohorts;
-                    _elapsedInMS = data.result.elapsedInMS;
-                    callback();
-                }else{
-                    alert("can't get data");
-                }
-            }
-        });
-
-
+        */
+        var query ={
+            "dataSource" : "gamecohort",
+            "appKey" : "c907ad335af73a664796f00bc4f17948",
+            "metric" : _metric,
+            "since" : _eventB+"Day",
+            "rowFields" : [ _eventB+"Day" ],
+            "rowFilters" : [ {
+                "values" : [ "2014-01-01|2014-01-09" ],
+                "filterType" : "Range",
+                "cubeField" : _eventB+"Day"
+            }, {
+                "values" : [ _dimensionCondition["Device"] ],
+                "filterType" : "Set",
+                "cubeField" : "Device"
+            },{
+                "values" : [_dimensionCondition["AppVersion"]],
+                "filterType" : "Set",
+                "cubeField" : "AppVersion"
+            } ],
+            "columnField" : _interval+"Age",
+            "columnFilters" : [ {
+                "values" : [ _eventA ],
+                "filterType" : "Set",
+                "cubeField" : "AfterEvent"
+            }, {
+                "values" : [ "1|7" ],
+                "filterType" : "Range",
+                "cubeField" : _interval+"Age"
+            } ]
+        }
+        return query;
     }
 }(window.countlyCohort = window.countlyCohort || {}, jQuery));
