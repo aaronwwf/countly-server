@@ -59,7 +59,7 @@ window.CohortView = countlyView.extend({
 
         $(".selectable").click(clickSelectable);
 
-        $(".addCondition").click(function(){
+        $(".addCondition").click(function(e){
             var $this= $(this);
             showOptions($(this),countlyCohort.getOptionList("dimensionCondition"),function(value){
                 $option = $('<p>'+value+':<span class="btn" title="'+value+'" _name="'+value+'">'+value+'</span></p>');
@@ -67,13 +67,15 @@ window.CohortView = countlyView.extend({
                 $("#optional-condition").append($option);
                 countlyCohort.addCondition(value);
             });
+            e.stopPropagation();
         });
-        $(".removeCondition").click(function(){
+        $(".removeCondition").click(function(e){
             var $this= $(this);
             showOptions($(this),countlyCohort.getOptionList("dimensionCondition"),function(value){
                 $this.text(value);
                 countlyCohort.setValue(name,value);
             });
+            e.stopPropagation();
         });
         $("#submit").click(function(){
 
@@ -82,7 +84,7 @@ window.CohortView = countlyView.extend({
         setDatePicker();
 
 
-        function clickSelectable(){
+        function clickSelectable(e){
             var $this= $(this);
             var name = $this.attr("_name");
 
@@ -90,9 +92,10 @@ window.CohortView = countlyView.extend({
                 $this.text(value);
                 countlyCohort.setValue(name,value);
             });
+            e.stopPropagation();
         }
 
-        function clickOptional(){
+        function clickOptional(e){
             var $this= $(this);
             var name = $this.attr("_name");
 
@@ -100,6 +103,7 @@ window.CohortView = countlyView.extend({
                 $this.text(value);
                 countlyCohort.setConditionValue(name,value);
             });
+            e.stopPropagation();
         }
 
         function showOptions($target,options,callback){
@@ -112,11 +116,14 @@ window.CohortView = countlyView.extend({
                 "top":(offset.top+30)+"px",
                 "left":offset.left
             });
-            $modal.find(".option").click(function(){
+            $modal.find(".option").click(function(e){
                 callback($(this).text());
                 $modal.remove();
+                e.stopPropagation();
             })
-
+            $(window).one("click",function(){
+                $modal.remove();
+            })
 
         }
         function setDatePicker(){

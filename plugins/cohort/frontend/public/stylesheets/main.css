@@ -4,12 +4,12 @@
     position:fixed;
     padding:3px;
     border-radius:3px;
+    z-index:1000;
 }
 
 #select-modal .option:hover{
     color:#333;
     background-color: #ddd;
-    z-index: 1000;
 }
 
 .btn{
