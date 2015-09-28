@@ -10,8 +10,13 @@
     var _dimensionCondition={};
     var _metaData={};
 
+    var _fromDate="2014-01-01";
+    var _toDate="2014-01-09";
+
     var _cohorts=[];
     var _elapsedInMS="";
+
+
 
     //Public Methods
     countlyCohort.initialize = function () {
@@ -47,9 +52,9 @@
             case "eventB":
                 return  ["Installation", "Launch", "In-App Purchase", "GameSession", "Won", "Lost"];
             case "interval":
-                return  ["Day","Week","Month"];
+                return  ["Day","Week"];
             case "dimension":
-                return  ["AppVersion","Device"];
+                return  ["Day","Week"];
             case "dimensionCondition":
                 var finalList=[];
                 var totalList=["AppVersion","Country","Device"];
@@ -77,12 +82,16 @@
             case "eventB":
                 _eventB=value;
                 break;
-            case "inteval":
+            case "interval":
                 _interval=value;
                 break;
             case "dimension":
                 _dimension=value;
                 break;
+            case "fromDate":
+                _fromDate=value;
+            case "toDate":
+                _toDate = value;
             default:
                 break;
         }
@@ -96,10 +105,14 @@
                 return _eventA;
             case "eventB":
                 return _eventB;
-            case "inteval":
+            case "interval":
                 return _interval;
             case "dimension":
                 return _dimension;
+            case "fromDate":
+                return _fromDate;
+            case "toDate":
+                return _toDate;
             default:
                 return;
         }
@@ -143,7 +156,7 @@
             success:function (data) {
                 if(data.status=="OK"){
                     _cohorts = data.result.cohorts;
-                    _elapsedInMS = data.result.elapsedInMS;
+                    _elapsedInMS = data.elapsedInMS;
                     callback();
                 }else{
                     alert("can't get data");
@@ -181,25 +194,34 @@
             } ]
         }
         */
-        var query ={
-            "dataSource" : "gamecohort",
-            "appKey" : "c907ad335af73a664796f00bc4f17948",
-            "metric" : _metric,
-            "since" : _eventB+"Day",
-            "rowFields" : [ _eventB+"Day" ],
-            "rowFilters" : [ {
-                "values" : [ "2014-01-01|2014-01-09" ],
-                "filterType" : "Range",
-                "cubeField" : _eventB+"Day"
-            }, {
+        var rowFilters =[{
+            "values" : [ _fromDate+"|"+_toDate],
+            "filterType" : "Range",
+            "cubeField" : _eventB+"Day"
+        }
+        ]
+        if(_dimensionCondition["Device"]){
+            rowFilters.push({
                 "values" : [ _dimensionCondition["Device"] ],
                 "filterType" : "Set",
                 "cubeField" : "Device"
-            },{
-                "values" : [_dimensionCondition["AppVersion"]],
+            })
+        }
+        if(_dimensionCondition["AppVersion"]){
+            rowFilters.push({
+                "values" : [ _dimensionCondition["AppVersion"] ],
                 "filterType" : "Set",
                 "cubeField" : "AppVersion"
-            } ],
+            })
+        }
+
+        var query ={
+            "dataSource" : "gamecohort",
+            "appKey" : "25a03f9f3557a2305744262f25245583",
+            "metric" : _metric,
+            "since" : _eventB+"Day",
+            "rowFields" : [ _eventB+"Day" ],
+            "rowFilters" :rowFilters,
             "columnField" : _interval+"Age",
             "columnFilters" : [ {
                 "values" : [ _eventA ],

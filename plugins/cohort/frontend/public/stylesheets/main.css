@@ -9,6 +9,7 @@
 #select-modal .option:hover{
     color:#333;
     background-color: #ddd;
+    z-index: 1000;
 }
 
 .btn{

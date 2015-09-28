@@ -19,9 +19,11 @@ window.CohortView = countlyView.extend({
         var sessionData = countlySession.getSessionData(),
             userDP = countlySession.getUserDP();
         var self = this;
+        console.log(countlyCohort.getElapsedInMS())
         this.templateData = {
             "page-title":jQuery.i18n.map["cohort.title"],
-            "logo-class":"cohort"
+            "logo-class":"cohort",
+            "execute-time":countlyCohort.getElapsedInMS()+""
         };
         if (!isRefresh) {
             $(this.el).html(this.template(this.templateData));
@@ -31,19 +33,25 @@ window.CohortView = countlyView.extend({
         }
     },
     refresh:function () {
+       //don't refresh data.
+    },
+    submit:function(){
         var self = this;
-        if (app.activeView != self) {
-            return false;
-        }
-        self.renderCommon(true);
-        newPage = $("<div>" + self.template(self.templateData) + "</div>");
 
-        $(self.el).find("#big-numbers-container").replaceWith(newPage.find("#big-numbers-container"));
 
         countlyCohort.refreshData(function(){
+            if (app.activeView != self) {
+                return false;
+            }
+            self.renderCommon(true);
+            newPage = $("<div>" + self.template(self.templateData) + "</div>");
+
+            $(self.el).find("#graph-header").replaceWith(newPage.find("#graph-header"));
             self.drawGraph();
         });
+
         app.localize();
+
     },
     afterRender:function(){
 
@@ -69,7 +77,7 @@ window.CohortView = countlyView.extend({
         });
         $("#submit").click(function(){
 
-            self.refresh();
+            self.submit();
         })
         setDatePicker();
 
@@ -196,7 +204,12 @@ window.CohortView = countlyView.extend({
                     return false;
                 }
                 console.log(moment(self.dateFromSelected).toDate().format("yyyy-mm-dd"));
-
+                var fromDate = moment(self.dateFromSelected).toDate().format("yyyy-mm-dd");
+                var toDate = moment(self.dateToSelected).toDate().format("yyyy-mm-dd");
+                $("#fromDate").val(fromDate);
+                $("#toDate").val(toDate);
+                countlyCohort.setValue("fromDate",fromDate);
+                countlyCohort.setValue("toDate",toDate);
             });
         }
 

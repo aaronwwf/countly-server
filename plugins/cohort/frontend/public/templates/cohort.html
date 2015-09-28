@@ -1,42 +1,58 @@
 <div class="dashboard-summary three">
-    <p>
-    Show me <span class="selectable btn" title="metric" _name="metric">metric</span> for people who did <span class="selectable  btn" title="Event A" _name="eventA">Event A</span>
-    </p>
-    <p>
-    Since they made <span class="selectable btn" title="Event B" _name="eventB">Event B</span><span class="fa fa-plus addCondition btn" _name="dimension"></span>
-    </p>
-    <p id="optional-condition"></p>
-    <p>
-    Cohort people within <span class="selectable btn" title="CohortInterval" _name="interval">CohortInterval</span> from Date A to Date B
-    </p>
-    <p>
-    by <span class="selectable btn" title="CohortDimension" _name="dimension">CohortDimension</span>
-    <div id="calendar-icon"></div>
-    <div id="my-date-picker">
-        <div class="tip"></div>
-        <div class="calendar-container">
-            <div id="my-date-from" class="calendar"></div>
-            <div id="my-date-to" class="calendar"></div>
-        </div>
-        <div class="button-container">
-            <div id="my-date-submit" style="float:right;" class="cly-button-dark" data-localize="common.apply"></div>
-        </div>
+    <div>
+        <p>
+            Please show me <span class="selectable btn" title="metric" _name="metric">metric</span> for people who did <span class="selectable  btn" title="Event A" _name="eventA">Event A</span>
+        </p>
+
     </div>
-        <br/>
-        <button id="submit">submit</button>
-    </p>
+    <div>
+        <p>
+            Since they made <span class="selectable btn" title="Event B" _name="eventB">Event B</span>
+            <span class="fa fa-plus addCondition btn" _name="dimension"></span>
+        </p>
+        <p id="optional-condition">
+
+        </p>
+    </div>
+    <div>
+        <div style="display:inline-block">
+            Cohort people within <span class="selectable btn" title="CohortInterval" _name="interval">CohortInterval</span>
+            from <input id="fromDate" type="text" style="width: 80px;"> to <input id="toDate" type="text" style="width:80px;"/>
+        </div>
+        <div style="display: inline-block">
+            <div id="calendar-icon"></div>
+            <div id="my-date-picker">
+                <div class="tip"></div>
+                <div class="calendar-container">
+                    <div id="my-date-from" class="calendar"></div>
+                    <div id="my-date-to" class="calendar"></div>
+                </div>
+                <div class="button-container">
+                    <div id="my-date-submit" style="float:right;" class="cly-button-dark" data-localize="common.apply"></div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div>
+        <!--
+        <p>
+           by <span class="selectable btn" title="CohortDimension" _name="dimension">CohortDimension</span>
+        </p>
+        -->
+        <p></p>
+        <button id="submit" class="icon-button dark">submit</button>
+    </div>
 </div>
 <div class="widget">
-    <div class="widget-header">
+    <div id="graph-header" class="widget-header">
         <div class="left">
-            {{#if logo-class}}
-            <div class="logo {{logo-class}}"></div>
-            {{else}}
-            <div class="logo font-logo2">
-                <i class="fa {{font-logo-class}}"></i>
-            </div>
-            {{/if}}
+            <div class="logo-icon fa fa-line-chart" style="font-size:25px;margin-top:5px;float:left"></div>
             <div class="title">{{page-title}}</div>
+        </div>
+        <div class="right">
+            <h3>Execute Time:  <span style="color:red;">{{execute-time}}</span>  ms</h3>
         </div>
     </div>
     <div class="widget-content help-zone-vb" data-help-localize="help.{{{chart-helper}}}" style="{{#if graph-type-double-pie}} overflow:hidden; {{else}} height:300px; padding-top:20px; padding-bottom:10px; {{/if}}">
