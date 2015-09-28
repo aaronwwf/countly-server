@@ -78,7 +78,8 @@ window.CohortView = countlyView.extend({
             e.stopPropagation();
         });
         $("#submit").click(function(){
-
+            countlyCohort.setValue("fromDate",$("#fromDate").val());
+            countlyCohort.setValue("toDate",$("#toDate").val());
             self.submit();
         })
         setDatePicker();
@@ -126,6 +127,8 @@ window.CohortView = countlyView.extend({
             })
 
         }
+
+
         function setDatePicker(){
             $(window).click(function () {
                 $("#my-date-picker").hide();
@@ -142,8 +145,8 @@ window.CohortView = countlyView.extend({
                     dateFrom.datepicker("option", "maxDate", moment(self.dateToSelected).toDate());
                     //dateFrom.datepicker("option", "maxDate", moment(self.dateToSelected).subtract("days", 1).toDate());
                 } else {
-                    self.dateToSelected = moment().toDate().getTime();
-                    dateTo.datepicker("setDate",moment().toDate());
+                    self.dateToSelected = new Date("2014-01-07").getTime();
+                    dateTo.datepicker("setDate",new Date("2014-01-07"));
                     dateFrom.datepicker("option", "maxDate", moment(self.dateToSelected).toDate());
                 }
 
@@ -151,9 +154,9 @@ window.CohortView = countlyView.extend({
                     dateFrom.datepicker("setDate", moment(self.dateFromSelected).toDate());
                     dateTo.datepicker("option", "minDate", moment(self.dateFromSelected).toDate());
                 } else {
-                    extendDate = moment(dateTo.datepicker("getDate")).subtract('days', 30).toDate();
+                    extendDate = moment(dateTo.datepicker("getDate")).subtract('days', 6).toDate();
                     dateFrom.datepicker("setDate", extendDate);
-                    self.dateFromSelected = moment(dateTo.datepicker("getDate")).subtract('days', 30).toDate().getTime();
+                    self.dateFromSelected = moment(dateTo.datepicker("getDate")).subtract('days', 6).toDate().getTime();
                     dateTo.datepicker("option", "minDate", moment(self.dateFromSelected).toDate());
                 }
 
@@ -217,6 +220,7 @@ window.CohortView = countlyView.extend({
                 $("#toDate").val(toDate);
                 countlyCohort.setValue("fromDate",fromDate);
                 countlyCohort.setValue("toDate",toDate);
+                $("#my-date-picker").hide();
             });
         }
 
