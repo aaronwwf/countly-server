@@ -2,6 +2,8 @@
     //Private Properties
     var _data ={};
 
+    var _dataSource="gamecohort";
+    var _appKey ="25a03f9f3557a2305744262f25245583";
     var _metric="";
     var _eventA="";
     var _eventB="";
@@ -12,11 +14,11 @@
 
     var _fromDate="2014-01-01";
     var _toDate="2014-01-09";
+    var _rangeFrom = "1";
+    var _rangeTo = "7";
 
     var _cohorts=[];
     var _elapsedInMS="";
-
-
 
     //Public Methods
     countlyCohort.initialize = function () {
@@ -90,8 +92,16 @@
                 break;
             case "fromDate":
                 _fromDate=value;
+                break;
             case "toDate":
                 _toDate = value;
+                break;
+            case "rangeFrom":
+                _rangeFrom = value;
+                break;
+            case "rangeTo":
+                _rangeTo = value;
+                break;
             default:
                 break;
         }
@@ -113,6 +123,10 @@
                 return _fromDate;
             case "toDate":
                 return _toDate;
+            case "rangeFrom":
+                return _rangeFrom;
+            case "rangeTo":
+                return _rangeTo;
             default:
                 return;
         }
@@ -216,7 +230,7 @@
         }
 
         var query ={
-            "dataSource" : "gamecohort",
+            "dataSource" : _dataSource,
             "appKey" : "25a03f9f3557a2305744262f25245583",
             "metric" : _metric,
             "since" : _eventB+"Day",
@@ -228,7 +242,7 @@
                 "filterType" : "Set",
                 "cubeField" : "AfterEvent"
             }, {
-                "values" : [ "1|7" ],
+                "values" : [ _rangeFrom+"|"+_rangeTo ],
                 "filterType" : "Range",
                 "cubeField" : _interval+"Age"
             } ]

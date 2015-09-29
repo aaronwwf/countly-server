@@ -42,7 +42,7 @@
         </p>
         -->
         <p></p>
-        <button id="submit" class="icon-button dark">submit</button>
+        <button id="submit" class="icon-button dark">Apply</button>
     </div>
 </div>
 <div class="widget">
@@ -52,12 +52,15 @@
             <div class="title">{{page-title}}</div>
         </div>
         <div class="right">
-            <h3>Execute Time:  <span style="color:red;">{{execute-time}}</span>  ms</h3>
+            <p style="font-size:20px;margin-top:5px">Range from <input id="rangeFrom" type="text" style="width: 40px;height:20px" value="{{range-from}}"/> to <input id="rangeTo" type="text" style="width:40px;height:20px" value="{{range-to}}"/>
+            Execute Time:  <span style="color:red;">{{execute-time}}</span>  ms</p>
         </div>
     </div>
     <div class="widget-content help-zone-vb" data-help-localize="help.{{{chart-helper}}}" style="{{#if graph-type-double-pie}} overflow:hidden; {{else}} height:300px; padding-top:20px; padding-bottom:10px; {{/if}}">
         <div id="dashboard-graph" class="graph" style="height:100%; margin-left:-10px;"></div>
     </div>
+    <div class="widget-footer">
 
+    </div>
 </div>
 

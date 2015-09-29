@@ -12,6 +12,8 @@ window.CohortView = countlyView.extend({
                 self.template = Handlebars.compile(src);
             }),$.get(countlyGlobal["path"]+'/cohort/templates/select-modal.html', function(src){
                 self.selectTemplate = Handlebars.compile(src);
+            }),$.get(countlyGlobal["path"]+'/cohort/templates/data-table.html', function(src){
+                self.dtTemplate = Handlebars.compile(src);
             }), countlyCohort.initialize()).then(function () {});
         }
     },
@@ -23,12 +25,15 @@ window.CohortView = countlyView.extend({
         this.templateData = {
             "page-title":jQuery.i18n.map["cohort.title"],
             "logo-class":"cohort",
-            "execute-time":countlyCohort.getElapsedInMS()+""
+            "execute-time":countlyCohort.getElapsedInMS()+"",
+            "range-from":countlyCohort.getValue("rangeFrom"),
+            "range-to":countlyCohort.getValue("rangeTo")
         };
         if (!isRefresh) {
             $(this.el).html(this.template(this.templateData));
             countlyCohort.refreshData(function(){
                 self.drawGraph();
+                self.drawTable();
             });
         }
     },
@@ -48,6 +53,7 @@ window.CohortView = countlyView.extend({
 
             $(self.el).find("#graph-header").replaceWith(newPage.find("#graph-header"));
             self.drawGraph();
+            self.drawTable();
         });
 
         app.localize();
@@ -80,6 +86,8 @@ window.CohortView = countlyView.extend({
         $("#submit").click(function(){
             countlyCohort.setValue("fromDate",$("#fromDate").val());
             countlyCohort.setValue("toDate",$("#toDate").val());
+            countlyCohort.setValue("rangeFrom",$("#rangeFrom").val());
+            countlyCohort.setValue("rangeTo",$("#rangeTo").val());
             self.submit();
         })
         setDatePicker();
@@ -227,15 +235,17 @@ window.CohortView = countlyView.extend({
     },
     drawGraph:function(){
         var cohorts = countlyCohort.getCohorts();
-
+        console.log(cohorts);
         var type="line";
         var ticksLabel;
         var dataPoints={dp:[]};
         $.each(cohorts,function(index,cohort){
             var cm = cohort.cohortMetrics;
+            var cs = cohort.cohortSize;
             var dataList=[];
             for(var i in cm ){
-                dataList.push([i,cm[i]]);
+                var proportion = cm[i]/cs;
+                dataList.push([i,proportion]);
             }
 
             dataPoints.dp.push({
@@ -243,25 +253,87 @@ window.CohortView = countlyView.extend({
                 label:cohort.cohortId
             })
         });
-        var inGraphProperties={
-            series:{
-                lines:{ stack:false, show:true, fill:true, lineWidth:2, fillColor:{ colors:[
-                    { opacity:0 },
-                    { opacity:0.15 }
-                ] }, shadowSize:0 },
-                points:{ show:true, radius:4, shadowSize:0 },
-                shadowSize:0
+        var ticks = [];
+        var rangeFrom = parseInt(countlyCohort.getValue("rangeFrom"));
+        var rangeTo = parseInt(countlyCohort.getValue("rangeTo"));
+        for( var i = 1;i<=1+rangeTo-rangeFrom;i++){
+            ticks.push([i,(rangeFrom+i-1)+""]);
+        }
+        var inGraphProperties= {
+            series: {
+                lines: {
+                    stack: false, show: true, fill: true, lineWidth: 2, fillColor: {
+                        colors: [
+                            {opacity: 0},
+                            {opacity: 0.15}
+                        ]
+                    }, shadowSize: 0
+                },
+                points: {show: true, radius: 4, shadowSize: 0},
+                shadowSize: 0
             },
-            xaxis:{
-                max:9,
-                min:0,
-                ticks:[
-                    [1,"1"],[2,"2"],[3,"3"],[4,"4"],[5,"5"],[6,"6"],[7,"7"]
-                ]
+            xaxis: {
+                max: rangeTo - rangeFrom + 3,
+                min: 0,
+                ticks: ticks
+            },
+            yaxis: {
+                min: 0,
+                max: 1,
+                minTickSize: 0.05,
+                tickFormatter: function (val, axis) {
+                    return (val*100).toFixed(0)+"%";
+                },
+                position: "left"
             }
         };
 
         countlyCommon.drawGraph(dataPoints, "#dashboard-graph",type,inGraphProperties);
+
+    },
+    drawTable:function(){
+        $(".dataTables_wrapper").remove();
+
+        var $dataTable = $(this.dtTemplate({}));
+        $('#content-container').append($dataTable);
+
+        var cohorts = countlyCohort.getCohorts();
+        var aoColumns =[];
+        aoColumns.push({
+                "mData":"id","sType":"string","sTitle":"cohortId"
+            },{
+                "mData":"size",sType:"number","sTitle":"cohortSize"
+            }
+        )
+        var rangeFrom = parseInt(countlyCohort.getValue("rangeFrom"));
+        var rangeTo = parseInt(countlyCohort.getValue("rangeTo"));
+        for( var i = 1;i<=rangeTo-rangeFrom+1;i++){
+           aoColumns.push({
+               "mData":"data_"+i,sType:"number","sTitle":""+(rangeFrom+i-1)
+           })
+        }
+
+        var aaData=[];
+        $.each(cohorts,function(index,cohort){
+            var cm = cohort.cohortMetrics;
+            var value={};
+            value.id=cohort.cohortId;
+            value.size = cohort.cohortSize;
+            for(var i in cm ){
+                value["data_"+i]=(cm[i]/cohort.cohortSize*100).toFixed(0)+"%";
+            }
+            aaData.push(value);
+        });
+
+        this.dtable = $dataTable.dataTable($.extend({}, $.fn.dataTable.defaults, {
+             "aaData": aaData,
+             "aoColumns":aoColumns
+         }));
+
+        $(".d-table").stickyTableHeaders();
+
+
+
 
     }
 });
